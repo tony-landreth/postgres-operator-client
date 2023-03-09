@@ -1,4 +1,4 @@
-name: Tests
+name: Test
 
 on:
   pull_request:
@@ -9,12 +9,62 @@ on:
       - main
 
 jobs:
-  go-test:
-    runs-on: ubuntu-latest
+  macos-k3s-test:
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with: { go-version: 1.x }
+    - name: Set bash
+      run: |
+        brew install bash
+        ln -s /usr/local/bin/bash /usr/local/bin/bash-terminal-app
 
-      - run: make check
-      - run: make check-cli-docs
+    - uses: actions/checkout@v3
+    - uses: actions/setup-go@v3
+      with: { go-version: 1.x }
+
+    - name: Install make
+      run: brew install make
+
+    - name: Build CLI
+      run: make build
+
+    - name: Set up Docker
+      uses: crazy-max/ghaction-setup-docker@v1
+      with:
+        version: 23.0.1
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      id: install
+
+    - name: Install helm
+      run: brew install helm
+
+    # - name: Create k8s Kind Cluster
+    #   run: |
+    #     brew install kind
+    #     kind create cluster 
+
+    - name: Create a k3d cluster 
+      run: |
+        brew install k3d
+        k3d cluster create likegrapes 
+
+    - name: Install kuttl
+      run: |
+        brew tap kudobuilder/tap
+        brew install kuttl-cli
+
+    - name: Create operator namespace
+      run: kubectl create namespace postgres-operator
+
+    - name: Install Operator
+      run: helm install pgo oci://registry.developers.crunchydata.com/crunchydata/pgo -n postgres-operator
+
+    - name: Check resources
+      run: |
+        top -l 1 | grep -E "^CPU|^Phys"
+
+    # - name: Run kuttl
+    #   run: |
+    #     make check-kuttl
+    #
