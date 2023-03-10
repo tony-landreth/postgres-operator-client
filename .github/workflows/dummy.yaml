@@ -45,8 +45,6 @@ jobs:
           PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
           echo export "${PATH}" >> ~/.bashrc
           source ~/.bashrc
-          kubectl krew install kuttl
-          kubectl kuttl version
 
       - name: Start k3s
         uses: ./.github/actions/k3d
@@ -64,6 +62,6 @@ jobs:
 
       - name: Run kuttl
         run: |
-          source ~/.bashrc
+          kubectl krew install kuttl
           kubectl kuttl version
           make check-kuttl
