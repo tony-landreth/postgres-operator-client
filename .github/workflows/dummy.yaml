@@ -31,7 +31,7 @@ jobs:
           sudo ln -s bash /bin/sh.bash
           sudo mv /bin/sh.bash /bin/sh
 
-      - name: Install krew
+      - name: Use krew to install the latest kuttl
         run: |
           (
             set -x; cd "$(mktemp -d)" &&
@@ -46,6 +46,7 @@ jobs:
           echo export "${PATH}" >> ~/.bashrc
           source ~/.bashrc
           kubectl krew install kuttl
+          kubectl kuttl version
 
       - name: Start k3s
         uses: ./.github/actions/k3d
