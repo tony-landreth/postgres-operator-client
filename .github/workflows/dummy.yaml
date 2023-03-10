@@ -32,8 +32,22 @@ jobs:
       - uses: actions/setup-go@v3
         with: { go-version: 1.x }
 
+      - name: Install krew
+        run: |
+          (
+            set -x; cd "$(mktemp -d)" &&
+            OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+            ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+            KREW="krew-${OS}_${ARCH}" &&
+            curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+            tar zxvf "${KREW}.tar.gz" &&
+            ./"${KREW}" install krew
+          )
+
       - name: Start k3s
         uses: ./.github/actions/k3d
+        with:
+          k3s-channel: "${{ matrix.kubernetes }}"
 
       - name: Build CLI
         run: make build
@@ -51,11 +65,7 @@ jobs:
 
       - name: Install kuttl
         run: |
-          curl -Lo /usr/local/bin/kubectl-kuttl https://github.com/kudobuilder/kuttl/releases/download/v0.13.0/kubectl-kuttl_0.13.0_linux_x86_64
-          chmod +x /usr/local/bin/kubectl-kuttl
-
-      - name: Check resources
-        run: free --giga
+          kubectl krew install kuttl
 
       - name: Run kuttl
         run: |
