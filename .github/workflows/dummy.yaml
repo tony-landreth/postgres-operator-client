@@ -26,6 +26,11 @@ jobs:
       - uses: actions/setup-go@v3
         with: { go-version: 1.x }
 
+      - name: Use bash
+        run: |
+          sudo ln -s bash /bin/sh.bash
+          sudo mv /bin/sh.bash /bin/sh
+
       - name: Install krew
         run: |
           (
@@ -37,8 +42,10 @@ jobs:
             tar zxvf "${KREW}.tar.gz" &&
             ./"${KREW}" install krew
           )
-          export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-          kubectl kubectl-krew install kuttl
+          PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+          echo export "${PATH}" >> ~/.bashrc
+          source ~/.bashrc
+          kubectl krew install kuttl
 
       - name: Start k3s
         uses: ./.github/actions/k3d
@@ -53,11 +60,6 @@ jobs:
 
       - name: Install Operator
         run: helm install pgo oci://registry.developers.crunchydata.com/crunchydata/pgo -n postgres-operator
-
-      - name: Use bash
-        run: |
-          sudo ln -s bash /bin/sh.bash
-          sudo mv /bin/sh.bash /bin/sh
 
       - name: Run kuttl
         run: |
