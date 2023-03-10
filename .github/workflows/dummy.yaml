@@ -64,4 +64,5 @@ jobs:
 
       - name: Run kuttl
         run: |
+          source ~/.bashrc
           make check-kuttl
