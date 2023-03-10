@@ -14,9 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
-        with:
-          go-version: 1.x
-      - run: make check 
   kuttl-k3d:
     runs-on: ubuntu-latest
     needs: [go-test]
@@ -41,12 +38,7 @@ jobs:
             ./"${KREW}" install krew
           )
           export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-          echo $PATH >> ~/.bashrc
-          source ~/.bashrc
-
-      - name: Install kuttl
-        run: |
-          kubectl krew install kuttl
+          kubectl-krew install kuttl
 
       - name: Start k3s
         uses: ./.github/actions/k3d
