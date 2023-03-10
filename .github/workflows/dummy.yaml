@@ -65,4 +65,5 @@ jobs:
       - name: Run kuttl
         run: |
           source ~/.bashrc
+          kubectl kuttl version
           make check-kuttl
