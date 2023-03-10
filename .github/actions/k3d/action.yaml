@@ -21,20 +21,6 @@ inputs:
     description: >
       Amount of time to wait for images to be fetched
 
-outputs:
-  k3d-version:
-    value: ${{ steps.k3d.outputs.k3d }}
-    description: >
-      K3d version
-  kubernetes-version:
-    value: ${{ steps.k3s.outputs.server }}
-    description: >
-      Kubernetes server version, as reported by the Kubernetes API
-  pause-image:
-    value: ${{ steps.k3s.outputs.pause-image }}
-    description: >
-      Pause image for prefetch images DaemonSet
-
 runs:
   using: composite
   steps:
