@@ -38,7 +38,7 @@ jobs:
             ./"${KREW}" install krew
           )
           export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-          kubectl-krew install kuttl
+          kubectl kubectl-krew install kuttl
 
       - name: Start k3s
         uses: ./.github/actions/k3d
